@@ -29,7 +29,7 @@
     ],
     "plugins": ["prettier"],
     "rules": {
-        "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
+        "prettier/prettier": ["warn", {}, { "usePrettierrc": true }],
         "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
