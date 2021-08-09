@@ -1,17 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import {
-    Home,
-    SingleVault,
-    NavBar,
-    Query,
-    SingleStrategy,
-} from './components/app';
-import SignIn from './components/common/SignIn';
-import PrivateRoute from './components/common/PrivateRoute';
-import { AuthProvider } from './contexts/AuthContext';
-import { Risk } from './components/app/Risk';
+import { Home, SingleVault, NavBar, SingleStrategy } from './components/app';
 
 class App extends React.Component {
     render() {
@@ -20,12 +10,12 @@ class App extends React.Component {
                 <NavBar />
                 <Switch>
                     <Route exact path="/" component={Home} />
-                    <Route exact path="/query" component={Query} />
                     <Route
                         exact
-                        path="/query/:groupingId/group/:groups"
-                        component={Query}
+                        path="/strategist/:strategist"
+                        component={Home}
                     />
+
                     <Route
                         exact
                         path="/vault/:vaultId"
@@ -36,11 +26,6 @@ class App extends React.Component {
                         path="/vault/:vaultId/strategy/:strategyId"
                         component={SingleStrategy}
                     />
-                    <AuthProvider>
-                        <Route exact path="/signin" component={SignIn} />
-                        <Route exact path="/signout" component={SignIn} />
-                        <PrivateRoute exact path="/risk" component={Risk} />
-                    </AuthProvider>
                 </Switch>
             </Router>
         );

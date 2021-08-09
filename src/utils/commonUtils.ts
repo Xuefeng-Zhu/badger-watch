@@ -1,15 +1,7 @@
-import {
-    ContractCallContext,
-    ContractCallReturnContext,
-} from 'ethereum-multicall';
 import { get } from 'lodash';
 import { BigNumber, BigNumberish, constants } from 'ethers';
 import { BigNumber as BN } from 'bignumber.js';
 import { StrategyAddressQueueIndex, VaultApi } from '../types';
-import {
-    CallContext,
-    ContractCallResults,
-} from 'ethereum-multicall/dist/models';
 import { getABIStrategiesHelper } from './abi';
 import { values } from 'lodash';
 
@@ -65,9 +57,9 @@ export const formatBPS = (val: string): string => {
     return (parseInt(val, 10) / 100).toString();
 };
 
-export const mapContractCalls = (result: ContractCallReturnContext) => {
+export const mapContractCalls = (result: any) => {
     const mappedObj: any = {};
-    result.callsReturnContext.forEach(({ methodName, returnValues }) => {
+    result.callsReturnContext.forEach(({ methodName, returnValues }: any) => {
         if (returnValues && returnValues.length > 0) {
             if (
                 typeof returnValues[0] === 'string' ||
@@ -93,8 +85,8 @@ export const STRATEGIES_HELPER_CONTRACT_ADDRESS =
 
 export const createStrategiesHelperCallAssetStrategiesAddresses = (
     vaults: VaultApi[]
-): ContractCallContext => {
-    const strategiesHelperCalls: CallContext[] = vaults.map((vault) => {
+): any => {
+    const strategiesHelperCalls: any[] = vaults.map((vault) => {
         return {
             methodName: 'assetStrategiesAddresses',
             methodParameters: [vault.address],
@@ -111,7 +103,7 @@ export const createStrategiesHelperCallAssetStrategiesAddresses = (
 
 export const mapToStrategyAddressQueueIndex = (
     vaultAddress: string,
-    strategiesHelperCallsResults: ContractCallResults
+    strategiesHelperCallsResults: any
 ): StrategyAddressQueueIndex[] => {
     const strategiesHelperCallsReturnContext =
         strategiesHelperCallsResults.results[STRATEGIES_HELPER_CONTRACT_ADDRESS]

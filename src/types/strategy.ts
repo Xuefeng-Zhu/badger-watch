@@ -5,7 +5,6 @@ export type StrategyParams = {
     activation: string;
     performanceFee: string;
     debtRatio: BigNumber;
-    lastReport: BigNumber;
     lastReportText: string;
     totalDebt: BigNumber;
     totalGain: BigNumber;
@@ -36,6 +35,10 @@ export type Strategy = {
     debtOutstanding: BigNumber;
     creditAvailable: BigNumber;
     expectedReturn: BigNumber;
+
+    debtRatio: BigNumber;
+    totalDebt: BigNumber;
+    lastReport: BigNumber;
 
     params: StrategyParams;
 };

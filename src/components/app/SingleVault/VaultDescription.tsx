@@ -12,17 +12,16 @@ import { formatBPS, displayAmount, sub } from '../../../utils/commonUtils';
 import Table from '../../common/Table';
 import ProgressBars from '../../common/ProgressBar';
 import { Vault } from '../../../types';
+import { toHumanDateText } from '../../../utils/dateUtils';
 
 interface VaultDescriptionProps {
-    vault: Vault | undefined;
-    isLoading: boolean;
+    vault: Vault;
 }
 
 export const VaultDescription = (props: VaultDescriptionProps) => {
     const { vault } = props;
 
     const renderErrors = () =>
-        vault &&
         vault.configErrors &&
         vault.configErrors.map((message: string) => {
             return (
@@ -31,66 +30,49 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                 </div>
             );
         });
-    const api_version = vault ? vault.apiVersion : '';
-    const emergency_shut_down =
-        vault && vault.emergencyShutdown === false ? (
-            <Chip
-                label="ok"
-                clickable
-                style={{
-                    color: '#fff',
-                    backgroundColor: 'rgba(1,201,147,1)',
-                }}
-            />
-        ) : (
-            <Chip
-                label="Emergency"
-                clickable
-                style={{
-                    color: '#fff',
-                    backgroundColor: '#ff6c6c',
-                }}
-            />
-        );
-    const rewards = vault ? checkLabel(vault.rewards) : '';
-    const governance = vault ? checkLabel(vault.governance) : '';
-    const management = vault ? checkLabel(vault.management) : '';
-    const guardian = vault ? checkLabel(vault.guardian) : '';
-    const total_asset =
-        vault &&
-        displayAmount(vault.totalAssets, vault.token.decimals) +
-            '  ' +
-            vault.token.symbol;
-    const total_debt =
-        vault &&
-        displayAmount(vault.totalDebt, vault.token.decimals) +
-            '  ' +
-            vault.token.symbol;
-    const unallocated =
-        vault &&
-        displayAmount(
-            sub(vault.totalAssets, vault.totalDebt),
-            vault.token.decimals
-        ) +
-            '  ' +
-            vault.token.symbol;
-    const vault_list = vault ? (
-        <Typography variant="body2" color="textSecondary">
-            {' '}
-            Deposit limit :
-            {displayAmount(vault.depositLimit, vault.token.decimals) +
-                '  ' +
-                vault.token.symbol}
-        </Typography>
+    const apiVersion = vault.apiVersion;
+    const emergencyShutDown = !vault.emergencyShutdown ? (
+        <Chip
+            label="ok"
+            clickable
+            style={{
+                color: '#fff',
+                backgroundColor: 'rgba(1,201,147,1)',
+            }}
+        />
     ) : (
-        ''
+        <Chip
+            label="Emergency"
+            clickable
+            style={{
+                color: '#fff',
+                backgroundColor: '#ff6c6c',
+            }}
+        />
     );
-    const management_fee = vault ? formatBPS(vault.managementFee) : '';
-    const performance_fee = vault ? formatBPS(vault.performanceFee) : '';
-    const debt_usage = vault ? formatBPS(vault.debtUsage) : '';
-    const debt_ratio = vault ? formatBPS(vault.debtRatio) : '';
-    const last_report_text = vault ? vault.lastReportText : '';
-    const render_error = vault ? renderErrors() : '';
+    const rewards = checkLabel(vault.rewards);
+    const governance = checkLabel(vault.governance);
+    const management = checkLabel(vault.management);
+    const guardian = checkLabel(vault.guardian);
+    const totalAsset = displayAmount(vault.totalAssets, 0) + ' ' + vault.symbol;
+    const totalDebt = displayAmount(vault.totalDebt, 0) + ' ' + vault.symbol;
+    const unallocated =
+        displayAmount(sub(vault.totalAssets, vault.totalDebt), 0) +
+        ' ' +
+        vault.symbol;
+    const vaultList = (
+        <Typography variant="body2" color="textSecondary">
+            Deposit limit :
+            {displayAmount(vault.depositLimit, 0) + ' ' + vault.symbol}
+        </Typography>
+    );
+    const managementFee = formatBPS(vault.managementFee);
+    const performanceFee = formatBPS(vault.performanceFee);
+    const debtUsage = formatBPS(vault.debtUsage);
+    const debtRatio = formatBPS(vault.debtRatio);
+    const lastReportText = toHumanDateText(vault.lastReport);
+    const renderError = renderErrors();
+
     return (
         <React.Fragment>
             <Table>
@@ -99,37 +81,32 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             API Version:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br />
-                                {api_version}
-                            </MediaQuery>{' '}
+                                {apiVersion}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            <TableCell>{api_version}</TableCell>
+                            <TableCell>{apiVersion}</TableCell>
                         </MediaQuery>
                     </TableRow>
                     <TableRow>
                         <TableCell>
                             Emergency shut down:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br /> {emergency_shut_down}
-                            </MediaQuery>{' '}
+                                {emergencyShutDown}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
-                            <TableCell>{emergency_shut_down}</TableCell>
+                            <TableCell>{emergencyShutDown}</TableCell>
                         </MediaQuery>
                     </TableRow>
                     <TableRow>
                         <TableCell>
                             Governance:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                {' '}
-                                <br />
                                 {governance}
-                            </MediaQuery>{' '}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
                             <TableCell>{governance}</TableCell>
                         </MediaQuery>
                     </TableRow>
@@ -137,10 +114,8 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             Management:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                {' '}
-                                <br />
                                 {management}
-                            </MediaQuery>{' '}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
                             <TableCell>{management}</TableCell>
@@ -151,12 +126,10 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             Guardian:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br />
                                 {guardian}
-                            </MediaQuery>{' '}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
                             <TableCell>{guardian}</TableCell>
                         </MediaQuery>
                     </TableRow>
@@ -164,12 +137,10 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             Rewards:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br />
                                 {rewards}
-                            </MediaQuery>{' '}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
                             <TableCell>{rewards}</TableCell>
                         </MediaQuery>
                     </TableRow>
@@ -177,69 +148,59 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             Assets:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                {' '}
-                                <br />
                                 Total asset:
-                                {total_asset}
+                                {totalAsset}
                                 <ProgressBars vault={vault} />
-                                {vault_list}
+                                {vaultList}
                             </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
                             <TableCell>
                                 Total asset:
-                                {total_asset}
+                                {totalAsset}
                                 <ProgressBars vault={vault} />
-                                {vault_list}
+                                {vaultList}
                             </TableCell>
                         </MediaQuery>
                     </TableRow>
-                    {vault ? (
+                    {/* {vault && (
                         <TokenPrice
                             label="Total Assets (USD):"
                             token={vault.token}
                             amount={vault.totalAssets}
                         />
-                    ) : (
-                        ''
-                    )}
+                    )} */}
                     <TableRow>
                         <TableCell>
                             Management fee:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br />
-                                {management_fee} %
-                            </MediaQuery>{' '}
+                                {managementFee}%
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
-                            <TableCell>{management_fee}%</TableCell>
+                            <TableCell>{managementFee}%</TableCell>
                         </MediaQuery>
                     </TableRow>
                     <TableRow>
                         <TableCell>
                             Performance fee:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br />
-                                {performance_fee}%
-                            </MediaQuery>{' '}
+                                {performanceFee}%
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
-                            <TableCell>{performance_fee}%</TableCell>
+                            <TableCell>{performanceFee}%</TableCell>
                         </MediaQuery>
                     </TableRow>
                     <TableRow>
                         <TableCell>
                             Time Since Last Report:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br />
-                                {last_report_text}
-                            </MediaQuery>{' '}
+                                {lastReportText}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
-                            <TableCell>{last_report_text}</TableCell>
+                            <TableCell>{lastReportText}</TableCell>
                         </MediaQuery>
                     </TableRow>
 
@@ -247,12 +208,11 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             Total Debt:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br /> {total_debt}
-                            </MediaQuery>{' '}
+                                {totalDebt}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
-                            <TableCell>{total_debt}</TableCell>
+                            <TableCell>{totalDebt}</TableCell>
                         </MediaQuery>
                     </TableRow>
 
@@ -260,11 +220,10 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             {`(Total Asset - Total Debt):`}
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br /> {unallocated}
-                            </MediaQuery>{' '}
+                                {unallocated}
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
                             <TableCell>{unallocated}</TableCell>
                         </MediaQuery>
                     </TableRow>
@@ -273,12 +232,11 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             Total Debt Ratio:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br /> {debt_ratio}%
-                            </MediaQuery>{' '}
+                                {debtRatio}%
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
-                            <TableCell>{debt_ratio}%</TableCell>
+                            <TableCell>{debtRatio}%</TableCell>
                         </MediaQuery>
                     </TableRow>
 
@@ -286,12 +244,11 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                         <TableCell>
                             Debt Usage:
                             <MediaQuery query="(max-device-width: 1224px)">
-                                <br /> {debt_usage}%
-                            </MediaQuery>{' '}
+                                {debtUsage}%
+                            </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            {' '}
-                            <TableCell>{debt_usage}%</TableCell>
+                            <TableCell>{debtUsage}%</TableCell>
                         </MediaQuery>
                     </TableRow>
 
@@ -304,13 +261,11 @@ export const VaultDescription = (props: VaultDescriptionProps) => {
                             <TableCell>
                                 Config Warnings:
                                 <MediaQuery query="(max-device-width: 1224px)">
-                                    {' '}
-                                    <br /> {render_error}
-                                </MediaQuery>{' '}
+                                    {renderError}
+                                </MediaQuery>
                             </TableCell>
                             <MediaQuery query="(min-device-width: 1224px)">
-                                {' '}
-                                <TableCell>{render_error}</TableCell>
+                                <TableCell>{renderError}</TableCell>
                             </MediaQuery>
                         </TableRow>
                     ) : null}

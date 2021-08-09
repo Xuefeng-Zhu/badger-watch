@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAsync } from 'react-use';
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { useParams } from 'react-router-dom';
-import { Vault } from '../../../types';
-import { getVault } from '../../../utils/vaults';
-import BreadCrumbs from '../SingleStrategy/BreadCrumbs';
-import Pie from '../Charts/Pie';
-import { StrategistList } from '../StrategistList';
-
-import { VaultDescription } from './VaultDescription';
 import Avatar from '@material-ui/core/Avatar';
-
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+
+import { getVault } from '../../../utils/vaults';
+import BreadCrumbs from '../SingleStrategy/BreadCrumbs';
+import Pie from '../Charts/Pie';
+import { StrategistList } from '../StrategistList';
+import { VaultDescription } from './VaultDescription';
 import EtherScanLink from '../../common/EtherScanLink';
 import ReactHelmet from '../../common/ReactHelmet';
+import { useWeb3Context } from '../../../providers/Web3ContextProvider';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -58,23 +58,17 @@ interface ParamTypes {
     vaultId: string;
 }
 export const SingleVault = () => {
-    const [value, setValue] = React.useState(0);
-
-    const handleChange = (event: any, newValue: number) => {
-        setValue(newValue);
-    };
+    const { provider } = useWeb3Context();
     const { vaultId } = useParams<ParamTypes>();
+    const [value, setValue] = React.useState(0);
+    const { value: vault, loading } = useAsync(async () => {
+        if (!provider) {
+            return;
+        }
 
-    const [vault, setVault] = useState<Vault | undefined>();
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setIsLoading(true);
-        getVault(vaultId).then((loadedVault) => {
-            setVault(loadedVault);
-            setIsLoading(false);
-        });
+        return await getVault(vaultId, provider);
     }, [vaultId]);
+
     const useStyles = makeStyles((theme: Theme) => ({
         root: {
             [theme.breakpoints.down('sm')]: {
@@ -88,8 +82,7 @@ export const SingleVault = () => {
             },
             marginLeft: 'auto',
             marginRight: 'auto',
-            border:
-                vault && vault.configOK === false ? '5px solid #ff6c6c' : '',
+            border: !vault?.configOK ? '5px solid #ff6c6c' : '',
         },
         crumbs: {
             maxWidth: '80%',
@@ -126,37 +119,36 @@ export const SingleVault = () => {
         },
     }));
     const classes = useStyles();
+    const handleChange = (event: any, newValue: number) => {
+        setValue(newValue);
+    };
+
+    // let content =
+
     return (
         <React.Fragment>
-            <ReactHelmet title={vault ? vault.name : ''} />
+            <ReactHelmet title={vault?.name} />
             <BreadCrumbs vaultId={vaultId} />
             <Card className={classes.root}>
-                {isLoading ? (
+                {loading ? (
                     <div
                         style={{
                             textAlign: 'center',
                             marginTop: '100px',
                         }}
                     >
-                        <CircularProgress />{' '}
+                        <CircularProgress />
                         <Typography>Loading vault..</Typography>
                     </div>
                 ) : (
                     <React.Fragment>
                         <CardHeader
                             avatar={
-                                <Avatar
-                                    src={vault ? vault.icon : ''}
-                                    aria-label="recipe"
-                                />
+                                <Avatar src={vault?.icon} aria-label="recipe" />
                             }
-                            title={vault ? vault.name : ''}
+                            title={vault?.name}
                             subheader={
-                                vault ? (
-                                    <EtherScanLink address={vault.address} />
-                                ) : (
-                                    ''
-                                )
+                                <EtherScanLink address={vault?.address} />
                             }
                         />
 
@@ -175,30 +167,23 @@ export const SingleVault = () => {
                         </Tabs>
 
                         <TabPanel value={value} index={0}>
-                            <VaultDescription
-                                vault={vault}
-                                isLoading={isLoading}
-                            />
+                            {vault && <VaultDescription vault={vault} />}
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            {vault && vault.strategies.length > 0 ? (
+                            {vault?.strategies.length && (
                                 <div>
                                     <Pie vault={vault} />
                                 </div>
-                            ) : (
-                                ''
                             )}
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                            {vault && vault.strategies.length > 0 ? (
+                            {vault?.strategies.length && (
                                 <div>
                                     <StrategistList
                                         vault={vault}
                                         dark={false}
                                     />
                                 </div>
-                            ) : (
-                                ''
                             )}
                         </TabPanel>
                     </React.Fragment>

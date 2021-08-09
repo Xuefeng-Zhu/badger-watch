@@ -8,14 +8,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Avatar from '@material-ui/core/Avatar';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Divider from '@material-ui/core/Divider';
-import { Vault } from '../../../types';
-import { StrategistList } from '../StrategistList';
-import EtherScanLink from '../../common/EtherScanLink';
-
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import { ReportProblem } from '@material-ui/icons';
 import { Typography } from '@material-ui/core';
+
+import { Vault } from '../../../types';
+import { StrategistList } from '../StrategistList';
+import EtherScanLink from '../../common/EtherScanLink';
 import { HtmlTooltip } from '../../common/HtmlTooltip';
 
 type VaultItemListProps = {
@@ -169,7 +169,6 @@ export const VaultItemList = (props: VaultItemListProps) => {
                                         <span className={classes.textVault}>
                                             {' '}
                                             {vault.name}{' '}
-                                            {`v${vault.apiVersion}`}
                                             {` (${vault.strategies.length}  strats)`}
                                         </span>
                                     </a>

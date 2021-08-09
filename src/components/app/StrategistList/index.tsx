@@ -11,6 +11,8 @@ import {
     displayAmount,
     formatBPS,
 } from '../../../utils/commonUtils';
+import { toHumanDateText } from '../../../utils/dateUtils';
+
 import { Strategy, Vault } from '../../../types';
 import Grid from '@material-ui/core/Grid';
 
@@ -114,7 +116,7 @@ export const StrategistList = (props: StrategistListProps) => {
                                             >
                                                 <a
                                                     className={classes.link}
-                                                    href={`/vault/${strategy.vault}/strategy/${strategy.address}`}
+                                                    href={`/vault/${vault.address}/strategy/${strategy.address}`}
                                                     rel="noreferrer"
                                                 >
                                                     <Hidden smUp>
@@ -163,7 +165,10 @@ export const StrategistList = (props: StrategistListProps) => {
                                     className={classes.link}
                                 >
                                     Time Since Last Report:
-                                    <br /> {strategy.params.lastReportText}
+                                    <br />{' '}
+                                    {toHumanDateText(
+                                        strategy.lastReport.toString()
+                                    )}
                                 </Grid>
                                 <Grid
                                     item
@@ -175,8 +180,8 @@ export const StrategistList = (props: StrategistListProps) => {
                                     <br />
                                     {vault &&
                                         displayAmount(
-                                            strategy.params.totalDebt.toString(),
-                                            vault.token.decimals
+                                            strategy.totalDebt.toString(),
+                                            0
                                         )}
                                 </Grid>
                                 <Grid
@@ -187,44 +192,7 @@ export const StrategistList = (props: StrategistListProps) => {
                                 >
                                     Debt ratio
                                     <br />
-                                    {formatBPS(
-                                        strategy.params.debtRatio.toString()
-                                    )}{' '}
-                                    %
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    md={2}
-                                    className={classes.link}
-                                >
-                                    Credit available
-                                    <br />
-                                    {vault &&
-                                        displayAmount(
-                                            strategy.creditAvailable.toString(),
-                                            vault.token.decimals
-                                        )}
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    md={3}
-                                    className={classes.link}
-                                    style={{
-                                        backgroundColor:
-                                            strategy.withdrawalQueueIndex < 0
-                                                ? 'red'
-                                                : '',
-                                    }}
-                                >
-                                    Index
-                                    <br />
-                                    {vault &&
-                                        displayAmount(
-                                            strategy.withdrawalQueueIndex.toString(),
-                                            0
-                                        )}
+                                    {formatBPS(strategy.debtRatio.toString())} %
                                 </Grid>
                             </Grid>
                         </AccordionDetails>

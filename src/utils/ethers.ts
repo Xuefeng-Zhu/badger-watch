@@ -5,6 +5,7 @@ export const getEthersDefaultProvider = (
     network = 'homestead'
 ): ethers.providers.BaseProvider => {
     const { infuraProjectId, alchemyKey } = getEnv();
+    console.log(alchemyKey);
     // return new providers.InfuraProvider(network, infuraProjectId);
     return new providers.AlchemyProvider(network, alchemyKey);
 };
