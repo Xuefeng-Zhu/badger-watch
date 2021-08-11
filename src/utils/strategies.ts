@@ -5,6 +5,7 @@ import {
 } from 'ethereum-multicall';
 import { utils } from 'ethers';
 import { omit, memoize } from 'lodash';
+import { Provider } from '@ethersproject/abstract-provider';
 
 import { getEthersDefaultProvider } from './ethers';
 import {
@@ -175,6 +176,7 @@ export const mapStrategiesCalls = (
         return {
             ...mappedVaultStratInfo,
             ...mappedStrat,
+            ...mappedStratParams,
             address,
             params: mappedStratParams,
             withdrawalQueueIndex,
@@ -182,7 +184,10 @@ export const mapStrategiesCalls = (
     });
 };
 
-const innerGetStrategies = async (addresses: string[]): Promise<Strategy[]> => {
+const innerGetStrategies = async (
+    addresses: string[],
+    provider: Provider
+): Promise<Strategy[]> => {
     if (addresses.length === 0) {
         throw new Error('Error: expect a valid strategy address');
     }
@@ -192,8 +197,6 @@ const innerGetStrategies = async (addresses: string[]): Promise<Strategy[]> => {
             throw new Error('Error: expect a valid strategy address');
         }
     });
-
-    const provider = getEthersDefaultProvider();
 
     const multicall = new Multicall({ ethersProvider: provider });
 
@@ -245,6 +248,8 @@ const innerGetStrategies = async (addresses: string[]): Promise<Strategy[]> => {
         [],
         strategyMap
     );
+
+    console.log(mappedStrategies);
 
     return mappedStrategies;
 };

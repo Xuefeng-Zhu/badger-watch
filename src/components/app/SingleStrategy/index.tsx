@@ -1,29 +1,31 @@
 import React, { useEffect, useState } from 'react';
-
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import StrategyDetail from './StrategyDetail';
-import MuiCard from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import { Strategy } from '../../../types';
 import { useParams } from 'react-router-dom';
 
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import MuiCard from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Typography } from '@material-ui/core';
-import BreadCrumbs from './BreadCrumbs';
-import EtherScanLink from '../../common/EtherScanLink';
-import ReactHelmet from '../../common/ReactHelmet';
-
-import { getStrategies } from '../../../utils/strategies';
-import { getReportsForStrategy, StrategyReport } from '../../../utils/reports';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { Typography } from '@material-ui/core';
+
+import BreadCrumbs from './BreadCrumbs';
 import StrategyReports from './StrategyReports';
+import StrategyDetail from './StrategyDetail';
+
+import { Strategy } from '../../../types';
+import EtherScanLink from '../../common/EtherScanLink';
+import ReactHelmet from '../../common/ReactHelmet';
+import { getStrategies } from '../../../utils/strategies';
+import { getReportsForStrategy, StrategyReport } from '../../../utils/reports';
+import { useWeb3Context } from '../../../providers/Web3ContextProvider';
 interface ParamTypes {
     strategyId: string;
     vaultId: string;
 }
 
 export const SingleStrategy = () => {
+    const { provider } = useWeb3Context();
     const { strategyId, vaultId } = useParams<ParamTypes>();
 
     const [strategyData, setStrategyData] = useState<Strategy[]>([]);
@@ -35,7 +37,7 @@ export const SingleStrategy = () => {
     const [isReportsLoading, setIsReportsLoading] = useState(true);
 
     useEffect(() => {
-        getStrategies([strategyId]).then((loadedStrategy) => {
+        getStrategies([strategyId], provider).then((loadedStrategy) => {
             setStrategyData(loadedStrategy);
             setIsLoaded(false);
         });
