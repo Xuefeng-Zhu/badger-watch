@@ -37,6 +37,9 @@ export const SingleStrategy = () => {
     const [isReportsLoading, setIsReportsLoading] = useState(true);
 
     useEffect(() => {
+        if (!provider) {
+            return;
+        }
         getStrategies([strategyId], provider).then((loadedStrategy) => {
             setStrategyData(loadedStrategy);
             setIsLoaded(false);
