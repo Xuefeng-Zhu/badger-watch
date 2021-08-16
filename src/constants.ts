@@ -1,21 +1,30 @@
 export interface NetworkInfo {
     name: string;
     chainId: number;
-    rpcUrl: string;
     badgerRegistry: string;
+    rpcUrl: string;
+    explorer: string;
 }
 
 export const NETWORKS: any = {
-    137: {
-        name: 'polygon',
-        chainId: 137,
-        rpcUrl: 'https://matic-mainnet.chainstacklabs.com',
+    1: {
+        name: 'Ethereum',
+        chainId: 1,
         badgerRegistry: '0xfda7eb6f8b7a9e9fcfd348042ae675d1d652454f',
+        rpcUrl: 'https://api.mycryptoapi.com/eth',
+        explorer: 'https://etherscan.io',
+    },
+    137: {
+        name: 'Polygon',
+        chainId: 137,
+        badgerRegistry: '0xfda7eb6f8b7a9e9fcfd348042ae675d1d652454f',
+        rpcUrl: 'https://matic-mainnet.chainstacklabs.com',
+        explorer: 'https://polygonscan.com',
     },
 };
 
 export const getNetworkById: (chainId: number) => NetworkInfo = (
     chainId: number
 ) => {
-    return NETWORKS[chainId] || NETWORKS[137];
+    return NETWORKS[chainId] || NETWORKS[1];
 };

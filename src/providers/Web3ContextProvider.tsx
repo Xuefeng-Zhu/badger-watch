@@ -1,15 +1,22 @@
-import { createContext, ReactChild, ReactChildren, useContext } from 'react';
+import {
+    createContext,
+    ReactChild,
+    ReactChildren,
+    useContext,
+    useState,
+} from 'react';
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 
-import { getNetworkById } from '../constants';
+import { getNetworkById, NetworkInfo } from '../constants';
 
 const targetNetworkId = Number(process.env.NETWORK_ID) || 137;
 
 interface Web3ContextProps {
     provider: JsonRpcProvider | undefined;
-    networkId: number;
+    network: NetworkInfo;
     badgerRegistry: string;
+    switchNetwork: (networkId: number) => void;
 }
 
 interface Web3ContextProviderProps {
@@ -18,21 +25,28 @@ interface Web3ContextProviderProps {
 
 export const Web3Context = createContext<Web3ContextProps>({
     provider: undefined,
-    networkId: targetNetworkId,
+    network: getNetworkById(targetNetworkId),
     badgerRegistry: '',
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    switchNetwork: () => {},
 });
 
 export const Web3ContextProvider = ({
     children,
 }: Web3ContextProviderProps): JSX.Element => {
-    const network = getNetworkById(targetNetworkId);
+    const [network, setNetwork] = useState(getNetworkById(targetNetworkId));
     const provider = new JsonRpcProvider(network.rpcUrl);
+
+    const switchNetwork = (networkId: number) => {
+        setNetwork(getNetworkById(networkId));
+    };
 
     return (
         <Web3Context.Provider
             value={{
                 provider,
-                networkId: targetNetworkId,
+                network,
+                switchNetwork,
                 badgerRegistry: network.badgerRegistry,
             }}
         >

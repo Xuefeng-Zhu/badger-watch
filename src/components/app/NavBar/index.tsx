@@ -1,7 +1,13 @@
+import { useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { useWeb3Context } from '../../../providers/Web3ContextProvider';
+import { NETWORKS } from '../../../constants';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -21,6 +27,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const NavBar = () => {
     const classes = useStyles();
+    const { network, switchNetwork } = useWeb3Context();
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClick = (event: any) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <AppBar
@@ -28,15 +44,37 @@ export const NavBar = () => {
             style={{ background: 'transparent', boxShadow: 'none' }}
         >
             <Toolbar>
-                <IconButton
-                    edge="start"
-                    className={classes.menuButton}
-                    color="inherit"
-                    aria-label="menu"
-                    href="/"
-                >
+                <Typography variant="h6" className={classes.title}>
                     Badger Watch
-                </IconButton>
+                </Typography>
+
+                <Button
+                    aria-controls="network-selector"
+                    aria-haspopup="true"
+                    variant="contained"
+                    onClick={handleClick}
+                >
+                    {network.name}
+                </Button>
+                <Menu
+                    id="network-selector"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                >
+                    {Object.values(NETWORKS).map((network: any) => (
+                        <MenuItem
+                            key={network.chainId}
+                            onClick={() => {
+                                switchNetwork(network.chainId);
+                                handleClose();
+                            }}
+                        >
+                            {network.name}
+                        </MenuItem>
+                    ))}
+                </Menu>
             </Toolbar>
         </AppBar>
     );

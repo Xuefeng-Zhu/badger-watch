@@ -1,12 +1,13 @@
 import { MouseEvent, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { extractAddress } from '../../../utils/commonUtils';
 import Hidden from '@material-ui/core/Hidden';
 import CallMadeIcon from '@material-ui/icons/CallMade';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FileCopy } from '@material-ui/icons';
 import { Link } from '@material-ui/core';
+import { extractAddress } from '../../../utils/commonUtils';
+import { useWeb3Context } from '../../../providers/Web3ContextProvider';
 
 type EtherScanLinkProps = {
     address?: string;
@@ -16,6 +17,7 @@ type EtherScanLinkProps = {
 };
 const EtherScanLink = (props: EtherScanLinkProps) => {
     const { address, transactionHash, dark, internalHref } = props;
+    const { network } = useWeb3Context();
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
@@ -70,8 +72,8 @@ const EtherScanLink = (props: EtherScanLinkProps) => {
         setCopied(true);
     };
     const refLink = transactionHash
-        ? `https://etherscan.io/tx/${value}`
-        : `https://etherscan.io/address/${value}`;
+        ? `${network.explorer}/tx/${value}`
+        : `${network.explorer}/address/${value}`;
     return (
         <span>
             <span className={classes.address}>
