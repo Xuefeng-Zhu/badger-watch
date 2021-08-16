@@ -5,22 +5,20 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Typography } from '@material-ui/core';
 import { VaultsList } from '../../common/VaultsList';
 import { useWeb3Context } from '../../../providers/Web3ContextProvider';
-import { useContractsContext } from '../../../providers/ContractsProvider';
-import { getVaults } from '../../../utils/registry';
+import { getRegistryGov, getVaults } from '../../../utils/registry';
 
 export const Home = () => {
     const { strategist } = useParams<any>();
     const { provider, badgerRegistry } = useWeb3Context();
-    const { BadgerRegistry } = useContractsContext();
 
     const state = useAsync(async () => {
-        let author = strategist;
-        if (!author) {
-            author = await BadgerRegistry?.governance();
-        }
-
         if (!provider) {
             return;
+        }
+
+        let author = strategist;
+        if (!author) {
+            author = await getRegistryGov(badgerRegistry, provider);
         }
 
         return await getVaults(badgerRegistry, author, provider);

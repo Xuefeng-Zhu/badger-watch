@@ -7,23 +7,17 @@ import { getVault } from './vaults';
 import BadgerRegistryABI from './ABI/BadgerRegistry.json';
 import { Vault } from '../types';
 
-const VAULT_VIEW_METHODS = [
-    'apiVersion',
-    'management',
-    'governance',
-    'guardian',
-    'depositLimit',
-    'totalAssets',
-    'debtRatio',
-    'totalDebt',
-    'lastReport',
-    'rewards',
-    'symbol',
-    'name',
-    'managementFee',
-    'performanceFee',
-    'emergencyShutdown',
-];
+export const getRegistryGov = async (
+    address: string,
+    provider: Provider
+): Promise<Vault[]> => {
+    if (!address || !utils.isAddress(address)) {
+        throw new Error('Error: expect a valid registry address');
+    }
+
+    const contract = new Contract(address, BadgerRegistryABI.abi, provider);
+    return await contract.governance();
+};
 
 export const getVaults = async (
     address: string,
@@ -68,7 +62,7 @@ const _getKeys = async (
             reference: address,
             contractAddress: address,
             abi: BadgerRegistryABI.abi,
-            calls: VAULT_VIEW_METHODS.map((method) => ({
+            calls: [].map((method) => ({
                 reference: method,
                 methodName: method,
                 methodParameters: [],
