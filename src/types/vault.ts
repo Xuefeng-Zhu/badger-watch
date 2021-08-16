@@ -9,6 +9,7 @@ export enum VaultVersion {
 
 export type Vault = {
     address: string;
+    version: string;
     apiVersion: string;
     name: string;
     symbol: string;

@@ -12,14 +12,14 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
-import { getVault } from '../../../utils/vaults';
-import BreadCrumbs from '../SingleStrategy/BreadCrumbs';
-import Pie from '../Charts/Pie';
-import { StrategistList } from '../StrategistList';
 import { VaultDescription } from './VaultDescription';
+import Pie from '../Charts/Pie';
+import BreadCrumbs from '../SingleStrategy/BreadCrumbs';
+import { StrategistList } from '../StrategistList';
 import EtherScanLink from '../../common/EtherScanLink';
 import ReactHelmet from '../../common/ReactHelmet';
 import { useWeb3Context } from '../../../providers/Web3ContextProvider';
+import { getVault } from '../../../utils/vaults';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -56,18 +56,19 @@ function a11yProps(index: any) {
 
 interface ParamTypes {
     vaultId: string;
+    version: string;
 }
 export const SingleVault = () => {
     const { provider } = useWeb3Context();
-    const { vaultId } = useParams<ParamTypes>();
+    const { vaultId, version } = useParams<ParamTypes>();
     const [value, setValue] = React.useState(0);
     const { value: vault, loading } = useAsync(async () => {
         if (!provider) {
             return;
         }
 
-        return await getVault(vaultId, provider);
-    }, [vaultId]);
+        return await getVault(vaultId, version, provider);
+    }, [vaultId, version]);
 
     const useStyles = makeStyles((theme: Theme) => ({
         root: {

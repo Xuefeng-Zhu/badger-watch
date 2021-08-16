@@ -5,19 +5,15 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import MuiCard from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import { Typography } from '@material-ui/core';
 
 import BreadCrumbs from './BreadCrumbs';
-import StrategyReports from './StrategyReports';
 import StrategyDetail from './StrategyDetail';
 
 import { Strategy } from '../../../types';
 import EtherScanLink from '../../common/EtherScanLink';
 import ReactHelmet from '../../common/ReactHelmet';
 import { getStrategies } from '../../../utils/strategies';
-import { getReportsForStrategy, StrategyReport } from '../../../utils/reports';
 import { useWeb3Context } from '../../../providers/Web3ContextProvider';
 interface ParamTypes {
     strategyId: string;
@@ -31,11 +27,6 @@ export const SingleStrategy = () => {
     const [strategyData, setStrategyData] = useState<Strategy[]>([]);
     const [isLoaded, setIsLoaded] = useState(true);
 
-    const [strategyReports, setStrategyReports] = useState<StrategyReport[]>(
-        []
-    );
-    const [isReportsLoading, setIsReportsLoading] = useState(true);
-
     useEffect(() => {
         if (!provider) {
             return;
@@ -43,11 +34,6 @@ export const SingleStrategy = () => {
         getStrategies([strategyId], provider).then((loadedStrategy) => {
             setStrategyData(loadedStrategy);
             setIsLoaded(false);
-        });
-
-        getReportsForStrategy(strategyId).then((reports) => {
-            setStrategyReports(reports);
-            setIsReportsLoading(false);
         });
     }, [strategyId]);
 
@@ -78,11 +64,7 @@ export const SingleStrategy = () => {
             },
         })
     );
-    const [value, setValue] = React.useState(0);
 
-    const handleChange = (event: React.ChangeEvent<any>, newValue: number) => {
-        setValue(newValue);
-    };
     const classes = useStyles();
 
     return (
@@ -90,7 +72,7 @@ export const SingleStrategy = () => {
             <ReactHelmet title={strategy ? strategy.name : ''} />
             <BreadCrumbs vaultId={vaultId} strategyId={strategyId} />
 
-            {isLoaded || isReportsLoading ? (
+            {isLoaded ? (
                 <div
                     style={{
                         textAlign: 'center',
@@ -114,27 +96,7 @@ export const SingleStrategy = () => {
                             )
                         }
                     />
-                    <Tabs
-                        className={classes.demo1}
-                        value={value}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        onChange={handleChange}
-                    >
-                        <Tab label="Detail" />
-                        <Tab label="Reports" />
-                    </Tabs>
-
-                    {value === 0 ? (
-                        <StrategyDetail strategy={strategy} />
-                    ) : (
-                        <StrategyReports
-                            reports={strategyReports}
-                            tokenDecimals={
-                                strategy ? strategy.token.decimals : 18
-                            }
-                        />
-                    )}
+                    <StrategyDetail strategy={strategy} />
                 </MuiCard>
             )}
         </React.Fragment>

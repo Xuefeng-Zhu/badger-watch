@@ -139,7 +139,7 @@ export const StrategyDetail = (props: StrategyDetailProps) => {
     );
     const vaults = strategy ? (
         <EtherScanLink
-            internalHref={`/vault/${strategy.vault.toLowerCase()}`}
+            internalHref={`/vault/${strategy.vault.toLowerCase()}/v2`}
             address={strategy.vault}
         />
     ) : (

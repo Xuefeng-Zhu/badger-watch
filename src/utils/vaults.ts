@@ -3,9 +3,9 @@ import { utils, Contract } from 'ethers';
 import { get, memoize } from 'lodash';
 import { Provider } from '@ethersproject/abstract-provider';
 import { Vault, Strategy } from '../types';
-import VaultABI from '../contracts/Vault';
 import { mapContractCalls } from './commonUtils';
 import { getStrategies } from './strategies';
+import VaultABI from './ABI/Vault.json';
 
 const VAULT_VIEW_METHODS = [
     'apiVersion',
@@ -25,20 +25,31 @@ const VAULT_VIEW_METHODS = [
     'emergencyShutdown',
 ];
 
-const _getVault = async (
+const VAULT_V1_VIEW_METHODS = ['governance', 'guardian', 'symbol', 'name'];
+
+export const getVault = async (
     address: string,
+    version = 'v2',
     provider: Provider
 ): Promise<Vault> => {
     if (!address || !utils.isAddress(address)) {
         throw new Error('Error: expect a valid vault address');
     }
+
+    let viewMethods = VAULT_V1_VIEW_METHODS;
+    let strategies: Strategy[] = [];
+    if (version === 'v2') {
+        viewMethods = VAULT_VIEW_METHODS;
+        strategies = await getVaultStrategies(address, provider);
+    }
+
     const multicall = new Multicall({ ethersProvider: provider });
     const vaultCall = [
         {
             reference: address,
             contractAddress: address,
-            abi: VaultABI,
-            calls: VAULT_VIEW_METHODS.map((method) => ({
+            abi: VaultABI.abi,
+            calls: viewMethods.map((method) => ({
                 reference: method,
                 methodName: method,
                 methodParameters: [],
@@ -51,11 +62,10 @@ const _getVault = async (
     return {
         ...mapContractCalls(results.results[address]),
         address,
-        strategies: await getVaultStrategies(address, provider),
+        strategies,
+        version,
     };
 };
-
-export const getVault = memoize(_getVault);
 
 const getVaultStrategies = async (
     address: string,
@@ -75,7 +85,7 @@ const getVaultStrategies = async (
         {
             reference: address,
             contractAddress: address,
-            abi: VaultABI,
+            abi: VaultABI.abi,
             calls: withdrawalQueueCalls,
         },
     ];

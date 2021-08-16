@@ -7,7 +7,6 @@ import { utils } from 'ethers';
 import { omit, memoize } from 'lodash';
 import { Provider } from '@ethersproject/abstract-provider';
 
-import { getEthersDefaultProvider } from './ethers';
 import {
     Strategy,
     StrategyAddressQueueIndex,

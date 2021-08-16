@@ -18,7 +18,7 @@ class App extends React.Component {
 
                     <Route
                         exact
-                        path="/vault/:vaultId"
+                        path="/vault/:vaultId/:version"
                         component={SingleVault}
                     />
                     <Route

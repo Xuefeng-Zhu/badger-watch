@@ -163,7 +163,7 @@ export const VaultItemList = (props: VaultItemListProps) => {
                                     )}
                                     <a
                                         className={classes.link}
-                                        href={`/vault/${vault.address}`}
+                                        href={`/vault/${vault.address}/${vault.version}`}
                                         rel="noreferrer"
                                     >
                                         <span className={classes.textVault}>

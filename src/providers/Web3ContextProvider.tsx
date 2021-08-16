@@ -9,6 +9,7 @@ const targetNetworkId = Number(process.env.NETWORK_ID) || 137;
 interface Web3ContextProps {
     provider: JsonRpcProvider | undefined;
     networkId: number;
+    badgerRegistry: string;
 }
 
 interface Web3ContextProviderProps {
@@ -18,6 +19,7 @@ interface Web3ContextProviderProps {
 export const Web3Context = createContext<Web3ContextProps>({
     provider: undefined,
     networkId: targetNetworkId,
+    badgerRegistry: '',
 });
 
 export const Web3ContextProvider = ({
@@ -31,6 +33,7 @@ export const Web3ContextProvider = ({
             value={{
                 provider,
                 networkId: targetNetworkId,
+                badgerRegistry: network.badgerRegistry,
             }}
         >
             {children}

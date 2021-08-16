@@ -51,7 +51,7 @@ const BreadCrumbs = (props: BreadCrumbsProps) => {
             <Link color="inherit" href="/">
                 vaults
             </Link>
-            <Link color="inherit" href={`/vault/${vaultId.toLowerCase()}`}>
+            <Link color="inherit" href={`/vault/${vaultId.toLowerCase()}/v2`}>
                 <Hidden smUp>{`${extractAddress(
                     vaultId.toLowerCase()
                 )}`}</Hidden>

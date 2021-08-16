@@ -16,7 +16,7 @@ const useStyles = makeStyles({
 });
 
 type VaultsListProps = {
-    items: Vault[];
+    items: Vault[] | undefined;
 };
 
 export const VaultsList = (props: VaultsListProps) => {

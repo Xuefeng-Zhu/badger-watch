@@ -3,12 +3,14 @@ import { useAsync } from 'react-use';
 import { useParams } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Typography } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
 import { VaultsList } from '../../common/VaultsList';
+import { useWeb3Context } from '../../../providers/Web3ContextProvider';
 import { useContractsContext } from '../../../providers/ContractsProvider';
+import { getVaults } from '../../../utils/registry';
 
 export const Home = () => {
     const { strategist } = useParams<any>();
+    const { provider, badgerRegistry } = useWeb3Context();
     const { BadgerRegistry } = useContractsContext();
 
     const state = useAsync(async () => {
@@ -17,19 +19,12 @@ export const Home = () => {
             author = await BadgerRegistry?.governance();
         }
 
-        const response = await BadgerRegistry?.fromAuthorWithDetails(author);
+        if (!provider) {
+            return;
+        }
 
-        return response.map((vault: any) => {
-            return {
-                ...vault,
-                address: vault[0],
-                strategies: vault.strategies.map((strategy: any) => ({
-                    ...strategy,
-                    address: strategy[0],
-                })),
-            };
-        });
-    }, [BadgerRegistry, strategist]);
+        return await getVaults(badgerRegistry, author, provider);
+    }, [provider, strategist]);
 
     console.log(state);
     if (state.loading) {

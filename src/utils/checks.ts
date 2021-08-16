@@ -25,6 +25,10 @@ addressMap.set(MANAGEMENT.toLowerCase(), 'brain.ychad.eth');
 addressMap.set(TREASURY.toLowerCase(), 'treasury.ychad.eth');
 
 export const checkLabel = (address: string) => {
+    if (!address) {
+        return;
+    }
+
     if (addressMap.has(address.toLowerCase())) {
         return addressMap.get(address.toLowerCase());
     }
