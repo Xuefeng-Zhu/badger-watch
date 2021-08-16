@@ -6,6 +6,7 @@ import { mapContractCalls } from './commonUtils';
 import { getVault } from './vaults';
 import BadgerRegistryABI from './ABI/BadgerRegistry.json';
 import { Vault } from '../types';
+import { LiveTv } from '@material-ui/icons';
 
 export const getRegistryGov = async (
     address: string,
@@ -48,12 +49,22 @@ const getVaultsByVersion = async (
     );
 };
 
-const _getKeys = async (
+const _getKeyValues = async (
     address: string,
     provider: Provider
-): Promise<Vault> => {
+): Promise<{ [key: string]: string }> => {
     if (!address || !utils.isAddress(address)) {
         throw new Error('Error: expect a valid registry address');
+    }
+
+    const contract = new Contract(address, BadgerRegistryABI.abi, provider);
+    const keys: string[] = [];
+    for (let i = 0; i < 20; i++) {
+        try {
+            keys.push(await contract.keys(i));
+        } catch {
+            break;
+        }
     }
 
     const multicall = new Multicall({ ethersProvider: provider });
@@ -62,19 +73,23 @@ const _getKeys = async (
             reference: address,
             contractAddress: address,
             abi: BadgerRegistryABI.abi,
-            calls: [].map((method) => ({
-                reference: method,
-                methodName: method,
-                methodParameters: [],
+            calls: keys.map((key) => ({
+                reference: 'get',
+                methodName: 'get',
+                methodParameters: [key],
             })),
         },
     ];
-
     const results = await multicall.call(registryCall);
 
-    return {
-        ...mapContractCalls(results.results[address]),
-    };
+    const keyValues: { [key: string]: string } = {};
+    results.results[address].callsReturnContext.forEach(
+        ({ methodParameters, returnValues }) => {
+            keyValues[methodParameters[0]] = returnValues[0];
+        }
+    );
+
+    return keyValues;
 };
 
-export const getKeys = memoize(_getKeys);
+export const getKeyValues = memoize(_getKeyValues);

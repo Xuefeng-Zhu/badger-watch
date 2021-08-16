@@ -5,3 +5,4 @@ export * from './SingleVault';
 export * from './NavBar';
 export * from './SingleStrategy';
 export * from './GenericList';
+export * from './KeyValues';

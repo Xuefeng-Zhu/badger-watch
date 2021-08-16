@@ -1,7 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import { Home, SingleVault, NavBar, SingleStrategy } from './components/app';
+import {
+    Home,
+    SingleVault,
+    NavBar,
+    SingleStrategy,
+    KeyValues,
+} from './components/app';
 
 class App extends React.Component {
     render() {
@@ -26,6 +32,8 @@ class App extends React.Component {
                         path="/vault/:vaultId/strategy/:strategyId"
                         component={SingleStrategy}
                     />
+
+                    <Route exact path="/keyvalues" component={KeyValues} />
                 </Switch>
             </Router>
         );
