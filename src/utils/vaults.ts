@@ -25,7 +25,7 @@ const VAULT_VIEW_METHODS = [
     'emergencyShutdown',
 ];
 
-const VAULT_V1_VIEW_METHODS = ['governance', 'guardian', 'symbol', 'name'];
+const VAULT_V1_VIEW_METHODS = ['symbol', 'name'];
 
 export const getVault = async (
     address: string,

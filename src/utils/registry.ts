@@ -20,6 +20,27 @@ export const getRegistryGov = async (
     return await contract.governance();
 };
 
+export const getProductionVaults = async (
+    address: string,
+    provider: Provider
+): Promise<Vault[]> => {
+    if (!address || !utils.isAddress(address)) {
+        throw new Error('Error: expect a valid registry address');
+    }
+
+    const vaults: Promise<Vault>[] = [];
+    const contract = new Contract(address, BadgerRegistryABI.abi, provider);
+    const res = await contract.getProductionVaults();
+    console.log(res);
+    for (const { version, list } of res) {
+        for (const vault of list) {
+            vaults.push(getVault(vault, version, provider));
+        }
+    }
+
+    return await Promise.all(vaults);
+};
+
 export const getVaults = async (
     address: string,
     author: string,

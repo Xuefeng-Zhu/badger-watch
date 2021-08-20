@@ -10,7 +10,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 
 import { getNetworkById, NetworkInfo } from '../constants';
 
-const targetNetworkId = Number(process.env.NETWORK_ID) || 137;
+const targetNetworkId = Number(process.env.NETWORK_ID) || 1;
 
 interface Web3ContextProps {
     provider: JsonRpcProvider | undefined;

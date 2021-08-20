@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { useWeb3Context } from '../../../providers/Web3ContextProvider';
@@ -21,6 +22,10 @@ const useStyles = makeStyles((theme: Theme) =>
             fontWeight: 400,
             lineHeight: '24px',
             fontColor: 'rgb(255, 255, 255)',
+
+            '& > * + *': {
+                marginLeft: theme.spacing(2),
+            },
         },
     })
 );
@@ -44,8 +49,13 @@ export const NavBar = () => {
             style={{ background: 'transparent', boxShadow: 'none' }}
         >
             <Toolbar>
-                <Typography variant="h6" className={classes.title}>
-                    Badger Watch
+                <Typography className={classes.title}>
+                    <Link color="inherit" href="/">
+                        Badger Watch
+                    </Link>
+                    <Link color="inherit" href="/keyvalues">
+                        KeyValues
+                    </Link>
                 </Typography>
 
                 <Button
