@@ -2,11 +2,11 @@ import { Multicall } from 'ethereum-multicall';
 import { utils, Contract } from 'ethers';
 import { memoize } from 'lodash';
 import { Provider } from '@ethersproject/abstract-provider';
-import { mapContractCalls } from './commonUtils';
 import { getVault } from './vaults';
 import BadgerRegistryABI from './ABI/BadgerRegistry.json';
 import { Vault } from '../types';
-import { LiveTv } from '@material-ui/icons';
+
+const VAULT_VIEW_METHODS = ['symbol', 'name'];
 
 export const getRegistryGov = async (
     address: string,
@@ -31,10 +31,13 @@ export const getProductionVaults = async (
     const vaults: Promise<Vault>[] = [];
     const contract = new Contract(address, BadgerRegistryABI.abi, provider);
     const res = await contract.getProductionVaults();
+
     console.log(res);
-    for (const { version, list } of res) {
+    for (const { version, status, list } of res) {
         for (const vault of list) {
-            vaults.push(getVault(vault, version, provider));
+            vaults.push(
+                getVault(vault, version, provider, VAULT_VIEW_METHODS, status)
+            );
         }
     }
 
@@ -66,7 +69,9 @@ const getVaultsByVersion = async (
     const vaults = await contract.getVaults(version, author);
 
     return await Promise.all(
-        vaults.map((vault: string) => getVault(vault, version, provider))
+        vaults.map((vault: string) =>
+            getVault(vault, version, provider, VAULT_VIEW_METHODS)
+        )
     );
 };
 

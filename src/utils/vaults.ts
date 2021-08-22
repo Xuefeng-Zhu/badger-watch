@@ -25,12 +25,14 @@ const VAULT_VIEW_METHODS = [
     'emergencyShutdown',
 ];
 
-const VAULT_V1_VIEW_METHODS = ['symbol', 'name'];
+const VAULT_V1_VIEW_METHODS = ['governance', 'guardian', 'symbol', 'name'];
 
 export const getVault = async (
     address: string,
-    version = 'v2',
-    provider: Provider
+    version: string,
+    provider: Provider,
+    vms: string[] = [],
+    status = 0
 ): Promise<Vault> => {
     if (!address || !utils.isAddress(address)) {
         throw new Error('Error: expect a valid vault address');
@@ -41,6 +43,10 @@ export const getVault = async (
     if (version === 'v2') {
         viewMethods = VAULT_VIEW_METHODS;
         strategies = await getVaultStrategies(address, provider);
+    }
+
+    if (vms.length) {
+        viewMethods = vms;
     }
 
     const multicall = new Multicall({ ethersProvider: provider });
@@ -64,6 +70,7 @@ export const getVault = async (
         address,
         strategies,
         version,
+        status,
     };
 };
 
