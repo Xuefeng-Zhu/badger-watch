@@ -34,6 +34,15 @@ export type Vault = {
     totalAssets: string;
     strategies: Strategy[];
     debtUsage: string;
+
+    // v1 field
+    keeper: string;
+    controller: string;
+    getPricePerFullShare: string;
+    balance: string;
+    available: string;
+    totalSupply: string;
+
     configOK: boolean;
     configErrors?: string[];
 };

@@ -12,6 +12,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
+import { V1VaultDescription } from './V1VaultDescription';
 import { VaultDescription } from './VaultDescription';
 import Pie from '../Charts/Pie';
 import BreadCrumbs from '../SingleStrategy/BreadCrumbs';
@@ -124,7 +125,53 @@ export const SingleVault = () => {
         setValue(newValue);
     };
 
-    // let content =
+    console.log(vault);
+
+    const renderContent = () => {
+        if (!vault) {
+            return <></>;
+        }
+
+        if (version === 'v1') {
+            return <V1VaultDescription vault={vault} />;
+        }
+
+        return (
+            <>
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label="scrollable auto tabs example"
+                >
+                    <Tab label="Details" {...a11yProps(0)} />
+                    <Tab label="Allocation" {...a11yProps(1)} />
+                    <Tab label="Strategies" {...a11yProps(2)} />
+                </Tabs>
+
+                <TabPanel value={value} index={0}>
+                    <VaultDescription vault={vault} />
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                    {vault.strategies.length && (
+                        <div>
+                            <Pie vault={vault} />
+                        </div>
+                    )}
+                </TabPanel>
+                <TabPanel value={value} index={2}>
+                    {vault.strategies.length && (
+                        <div>
+                            <StrategistList vault={vault} dark={false} />
+                        </div>
+                    )}
+                </TabPanel>
+            </>
+        );
+    };
 
     return (
         <React.Fragment>
@@ -153,40 +200,7 @@ export const SingleVault = () => {
                             }
                         />
 
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            aria-label="scrollable auto tabs example"
-                        >
-                            <Tab label="Details" {...a11yProps(0)} />
-                            <Tab label="Allocation" {...a11yProps(1)} />
-                            <Tab label="Strategies" {...a11yProps(2)} />
-                        </Tabs>
-
-                        <TabPanel value={value} index={0}>
-                            {vault && <VaultDescription vault={vault} />}
-                        </TabPanel>
-                        <TabPanel value={value} index={1}>
-                            {vault?.strategies.length && (
-                                <div>
-                                    <Pie vault={vault} />
-                                </div>
-                            )}
-                        </TabPanel>
-                        <TabPanel value={value} index={2}>
-                            {vault?.strategies.length && (
-                                <div>
-                                    <StrategistList
-                                        vault={vault}
-                                        dark={false}
-                                    />
-                                </div>
-                            )}
-                        </TabPanel>
+                        {renderContent()}
                     </React.Fragment>
                 )}
             </Card>

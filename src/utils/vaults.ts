@@ -6,6 +6,7 @@ import { Vault, Strategy } from '../types';
 import { mapContractCalls } from './commonUtils';
 import { getStrategies } from './strategies';
 import VaultABI from './ABI/Vault.json';
+import V1VaultABI from './ABI/V1Vault.json';
 
 const VAULT_VIEW_METHODS = [
     'apiVersion',
@@ -25,7 +26,17 @@ const VAULT_VIEW_METHODS = [
     'emergencyShutdown',
 ];
 
-const VAULT_V1_VIEW_METHODS = ['governance', 'guardian', 'symbol', 'name'];
+const VAULT_V1_VIEW_METHODS = [
+    'governance',
+    'keeper',
+    'controller',
+    'symbol',
+    'name',
+    'getPricePerFullShare',
+    'balance',
+    'available',
+    'totalSupply',
+];
 
 export const getVault = async (
     address: string,
@@ -38,9 +49,11 @@ export const getVault = async (
         throw new Error('Error: expect a valid vault address');
     }
 
+    let vaultAbi: any = V1VaultABI.abi;
     let viewMethods = VAULT_V1_VIEW_METHODS;
     let strategies: Strategy[] = [];
     if (version === 'v2') {
+        vaultAbi = VaultABI.abi;
         viewMethods = VAULT_VIEW_METHODS;
         strategies = await getVaultStrategies(address, provider);
     }
@@ -54,7 +67,7 @@ export const getVault = async (
         {
             reference: address,
             contractAddress: address,
-            abi: VaultABI.abi,
+            abi: vaultAbi,
             calls: viewMethods.map((method) => ({
                 reference: method,
                 methodName: method,
