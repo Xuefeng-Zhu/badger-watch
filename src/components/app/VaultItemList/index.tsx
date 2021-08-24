@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import MuiAccordion from '@material-ui/core/Accordion';
@@ -161,9 +162,9 @@ export const VaultItemList = (props: VaultItemListProps) => {
                                     ) : (
                                         ''
                                     )}
-                                    <a
+                                    <Link
                                         className={classes.link}
-                                        href={`/vault/${vault.version}/${vault.address}`}
+                                        to={`/vault/${vault.version}/${vault.address}`}
                                         rel="noreferrer"
                                     >
                                         <span className={classes.textVault}>
@@ -171,7 +172,7 @@ export const VaultItemList = (props: VaultItemListProps) => {
                                             {vault.name}{' '}
                                             {` (${vault.strategies.length}  strats)`}
                                         </span>
-                                    </a>
+                                    </Link>
                                 </Grid>
                                 <Hidden xsDown>
                                     {' '}

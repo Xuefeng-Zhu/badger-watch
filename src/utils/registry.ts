@@ -75,7 +75,7 @@ const getVaultsByVersion = async (
     );
 };
 
-const _getKeyValues = async (
+export const getKeyValues = async (
     address: string,
     provider: Provider
 ): Promise<{ [key: string]: string }> => {
@@ -117,5 +117,3 @@ const _getKeyValues = async (
 
     return keyValues;
 };
-
-export const getKeyValues = memoize(_getKeyValues);

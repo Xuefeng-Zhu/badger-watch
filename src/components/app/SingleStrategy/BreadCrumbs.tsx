@@ -1,3 +1,4 @@
+import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Hidden from '@material-ui/core/Hidden';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -33,8 +34,9 @@ const BreadCrumbs = (props: BreadCrumbsProps) => {
     if (strategyId !== undefined) {
         strategyLevel = (
             <Link
+                component={RouterLink}
                 color="inherit"
-                href={`/vault/${vaultId.toLowerCase()}/strategy/${strategyId.toLowerCase()}`}
+                to={`/vault/${vaultId.toLowerCase()}/strategy/${strategyId.toLowerCase()}`}
             >
                 <Typography className={classes.text}>
                     <Hidden smUp>{`${extractAddress(
@@ -48,10 +50,14 @@ const BreadCrumbs = (props: BreadCrumbsProps) => {
 
     return (
         <MuiBreadcrumbs className={classes.crumbs}>
-            <Link color="inherit" href="/">
+            <Link component={RouterLink} color="inherit" to="/">
                 vaults
             </Link>
-            <Link color="inherit" href={`/vault/${vaultId.toLowerCase()}/v2`}>
+            <Link
+                component={RouterLink}
+                color="inherit"
+                to={`/vault/${vaultId.toLowerCase()}/v2`}
+            >
                 <Hidden smUp>{`${extractAddress(
                     vaultId.toLowerCase()
                 )}`}</Hidden>

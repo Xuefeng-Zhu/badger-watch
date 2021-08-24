@@ -9,13 +9,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { VaultsList } from '../../common/VaultsList';
 import { useWeb3Context } from '../../../providers/Web3ContextProvider';
 import { getKeyValues } from '../../../utils/registry';
 
 export const KeyValues = () => {
     const { provider, badgerRegistry } = useWeb3Context();
-
     const state = useAsync(async () => {
         if (!provider) {
             return;
@@ -23,8 +21,6 @@ export const KeyValues = () => {
 
         return await getKeyValues(badgerRegistry, provider);
     }, [provider]);
-
-    console.log(state);
 
     if (state.loading) {
         return (
@@ -36,7 +32,7 @@ export const KeyValues = () => {
             >
                 <CircularProgress style={{ color: '#fff' }} />
                 <Typography style={{ color: '#fff' }}>
-                    Loading vaults..
+                    Loading key values..
                 </Typography>
             </div>
         );

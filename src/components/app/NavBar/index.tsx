@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -50,10 +51,14 @@ export const NavBar = () => {
         >
             <Toolbar>
                 <Typography className={classes.title}>
-                    <Link color="inherit" href="/">
+                    <Link component={RouterLink} color="inherit" to="/">
                         Badger Watch
                     </Link>
-                    <Link color="inherit" href="/keyvalues">
+                    <Link
+                        component={RouterLink}
+                        color="inherit"
+                        to="/keyvalues"
+                    >
                         KeyValues
                     </Link>
                 </Typography>
