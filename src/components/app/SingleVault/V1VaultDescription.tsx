@@ -1,18 +1,18 @@
 import React from 'react';
+import { useAsync } from 'react-use';
 import MediaQuery from 'react-responsive';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { Typography } from '@material-ui/core';
-import Chip from '@material-ui/core/Chip';
+import { CheckCircle } from '@material-ui/icons';
+import { green } from '@material-ui/core/colors';
 
-import TokenPrice from '../../common/TokenPrice';
 import { checkLabel } from '../../../utils/checks';
 import { formatBPS, displayAmount, sub } from '../../../utils/commonUtils';
 import Table from '../../common/Table';
-import ProgressBars from '../../common/ProgressBar';
 import { Vault } from '../../../types';
-import { toHumanDateText } from '../../../utils/dateUtils';
+import { useWeb3Context } from '../../../providers/Web3ContextProvider';
+import { getKeyValues } from '../../../utils/registry';
 
 interface VaultDescriptionProps {
     vault: Vault;
@@ -20,7 +20,21 @@ interface VaultDescriptionProps {
 
 export const V1VaultDescription = (props: VaultDescriptionProps) => {
     const { vault } = props;
+    const { provider, badgerRegistry } = useWeb3Context();
 
+    const { value: keyValues } = useAsync(async () => {
+        if (!provider) {
+            return;
+        }
+
+        return await getKeyValues(badgerRegistry, provider, [
+            'governance',
+            'controller',
+            'keeper',
+        ]);
+    }, [provider]);
+
+    console.log(keyValues);
     const renderErrors = () =>
         vault.configErrors &&
         vault.configErrors.map((message: string) => {
@@ -30,26 +44,7 @@ export const V1VaultDescription = (props: VaultDescriptionProps) => {
                 </div>
             );
         });
-    const apiVersion = vault.apiVersion;
-    const emergencyShutDown = !vault.emergencyShutdown ? (
-        <Chip
-            label="ok"
-            clickable
-            style={{
-                color: '#fff',
-                backgroundColor: 'rgba(1,201,147,1)',
-            }}
-        />
-    ) : (
-        <Chip
-            label="Emergency"
-            clickable
-            style={{
-                color: '#fff',
-                backgroundColor: '#ff6c6c',
-            }}
-        />
-    );
+
     const governance = checkLabel(vault.governance);
     const keeper = checkLabel(vault.keeper);
     const controller = checkLabel(vault.controller);
@@ -59,7 +54,6 @@ export const V1VaultDescription = (props: VaultDescriptionProps) => {
         displayAmount(vault.totalSupply, 0) + ' ' + vault.symbol;
     const renderError = renderErrors();
 
-    console.log(vault);
     return (
         <React.Fragment>
             <Table>
@@ -72,7 +66,14 @@ export const V1VaultDescription = (props: VaultDescriptionProps) => {
                             </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            <TableCell>{governance}</TableCell>
+                            <TableCell>
+                                {governance}
+                                {vault.governance == keyValues?.governance && (
+                                    <CheckCircle
+                                        style={{ color: green[500] }}
+                                    />
+                                )}
+                            </TableCell>
                         </MediaQuery>
                     </TableRow>
                     <TableRow>
@@ -83,7 +84,14 @@ export const V1VaultDescription = (props: VaultDescriptionProps) => {
                             </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            <TableCell>{keeper}</TableCell>
+                            <TableCell>
+                                {keeper}
+                                {vault.keeper == keyValues?.keeper && (
+                                    <CheckCircle
+                                        style={{ color: green[500] }}
+                                    />
+                                )}
+                            </TableCell>
                         </MediaQuery>
                     </TableRow>
 
@@ -95,7 +103,14 @@ export const V1VaultDescription = (props: VaultDescriptionProps) => {
                             </MediaQuery>
                         </TableCell>
                         <MediaQuery query="(min-device-width: 1224px)">
-                            <TableCell>{controller}</TableCell>
+                            <TableCell>
+                                {controller}
+                                {vault.controller == keyValues?.controller && (
+                                    <CheckCircle
+                                        style={{ color: green[500] }}
+                                    />
+                                )}
+                            </TableCell>
                         </MediaQuery>
                     </TableRow>
 

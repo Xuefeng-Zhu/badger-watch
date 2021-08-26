@@ -77,19 +77,22 @@ const getVaultsByVersion = async (
 
 export const getKeyValues = async (
     address: string,
-    provider: Provider
+    provider: Provider,
+    keys: string[] = []
 ): Promise<{ [key: string]: string }> => {
     if (!address || !utils.isAddress(address)) {
         throw new Error('Error: expect a valid registry address');
     }
 
     const contract = new Contract(address, BadgerRegistryABI.abi, provider);
-    const keys: string[] = [];
-    for (let i = 0; i < 20; i++) {
-        try {
-            keys.push(await contract.keys(i));
-        } catch {
-            break;
+
+    if (keys.length === 0) {
+        for (let i = 0; i < 20; i++) {
+            try {
+                keys.push(await contract.keys(i));
+            } catch {
+                break;
+            }
         }
     }
 

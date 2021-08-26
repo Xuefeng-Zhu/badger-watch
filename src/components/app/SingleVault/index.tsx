@@ -125,8 +125,6 @@ export const SingleVault = () => {
         setValue(newValue);
     };
 
-    console.log(vault);
-
     const renderContent = () => {
         if (!vault) {
             return <></>;
