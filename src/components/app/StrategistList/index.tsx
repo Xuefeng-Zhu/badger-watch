@@ -86,117 +86,49 @@ export const StrategistList = (props: StrategistListProps) => {
             </Typography>
             {vault.strategies &&
                 vault.strategies.map((strategy: Strategy, index: number) => (
-                    <Accordion
-                        key={index}
-                        className={classes.accordion}
-                        defaultExpanded={expand}
-                    >
-                        <AccordionSummary
-                            expandIcon={
-                                <ExpandMoreIcon
-                                    className={classes.expandIcon}
-                                />
-                            }
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
-                        >
-                            <Grid className={classes.rootGrid}>
-                                <Grid item md={12} xs={12}>
-                                    <Grid
-                                        container
-                                        spacing={1}
-                                        direction="row"
-                                        justify="center"
-                                        alignItems="center"
+                    <Grid key={index} className={classes.rootGrid}>
+                        <Grid item md={12} xs={12}>
+                            <Grid
+                                container
+                                spacing={1}
+                                direction="row"
+                                justify="center"
+                                alignItems="center"
+                            >
+                                <Grid item md={4} xs={12}>
+                                    <Typography
+                                        variant="subtitle1"
+                                        gutterBottom
                                     >
-                                        <Grid item md={4} xs={12}>
-                                            <Typography
-                                                variant="subtitle1"
-                                                gutterBottom
-                                            >
-                                                <a
-                                                    className={classes.link}
-                                                    href={`/vault/${vault.address}/strategy/${strategy.address}`}
-                                                    rel="noreferrer"
-                                                >
-                                                    <Hidden smUp>
-                                                        {strategy.name.length >
-                                                        20
-                                                            ? extractText(
-                                                                  strategy.name
-                                                              )
-                                                            : strategy.name}
-                                                    </Hidden>
+                                        <a
+                                            className={classes.link}
+                                            href={`/vault/${vault.address}/strategy/${strategy.address}`}
+                                            rel="noreferrer"
+                                        >
+                                            <Hidden smUp>
+                                                {strategy.name.length > 20
+                                                    ? extractText(strategy.name)
+                                                    : strategy.name}
+                                            </Hidden>
 
-                                                    <Hidden xsDown>
-                                                        {strategy.name}
-                                                    </Hidden>
-                                                </a>
-                                            </Typography>
-                                        </Grid>
-                                        <Hidden xsDown>
-                                            {' '}
-                                            <Grid item md={8} xs={6}>
-                                                <EtherScanLink
-                                                    address={strategy.address}
-                                                    dark={props.dark}
-                                                />
-                                            </Grid>
-                                        </Hidden>
-                                    </Grid>
+                                            <Hidden xsDown>
+                                                {strategy.name}
+                                            </Hidden>
+                                        </a>
+                                    </Typography>
                                 </Grid>
-                            </Grid>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Grid container spacing={1}>
-                                <Hidden smUp>
+                                <Hidden xsDown>
                                     {' '}
-                                    <Typography>
+                                    <Grid item md={8} xs={6}>
                                         <EtherScanLink
                                             address={strategy.address}
                                             dark={props.dark}
                                         />
-                                    </Typography>
+                                    </Grid>
                                 </Hidden>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    md={3}
-                                    className={classes.link}
-                                >
-                                    Time Since Last Report:
-                                    <br />{' '}
-                                    {toHumanDateText(
-                                        strategy.lastReport.toString()
-                                    )}
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    md={2}
-                                    className={classes.link}
-                                >
-                                    Total debt
-                                    <br />
-                                    {vault &&
-                                        displayAmount(
-                                            strategy.totalDebt.toString(),
-                                            0
-                                        )}
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={12}
-                                    md={2}
-                                    className={classes.link}
-                                >
-                                    Debt ratio
-                                    <br />
-                                    {formatBPS(strategy.debtRatio.toString())} %
-                                </Grid>
                             </Grid>
-                        </AccordionDetails>
-                    </Accordion>
+                        </Grid>
+                    </Grid>
                 ))}
         </div>
     );

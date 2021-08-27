@@ -4,8 +4,9 @@ import { get, memoize } from 'lodash';
 import { Provider } from '@ethersproject/abstract-provider';
 import { Vault, Strategy } from '../types';
 import { mapContractCalls } from './commonUtils';
-import { getStrategies } from './strategies';
+import { getStrategies, getV1Strategy } from './strategies';
 import VaultABI from './ABI/Vault.json';
+import ControllerABI from './ABI/Controller.json';
 import V1VaultABI from './ABI/V1Vault.json';
 
 const VAULT_VIEW_METHODS = [
@@ -26,7 +27,7 @@ const VAULT_VIEW_METHODS = [
     'emergencyShutdown',
 ];
 
-const VAULT_V1_VIEW_METHODS = [
+const V1_VAULT_VIEW_METHODS = [
     'governance',
     'keeper',
     'controller',
@@ -36,6 +37,7 @@ const VAULT_V1_VIEW_METHODS = [
     'balance',
     'available',
     'totalSupply',
+    'token',
 ];
 
 export const getVault = async (
@@ -50,8 +52,9 @@ export const getVault = async (
     }
 
     let vaultAbi: any = V1VaultABI.abi;
-    let viewMethods = VAULT_V1_VIEW_METHODS;
+    let viewMethods = V1_VAULT_VIEW_METHODS;
     let strategies: Strategy[] = [];
+
     if (version === 'v2') {
         vaultAbi = VaultABI.abi;
         viewMethods = VAULT_VIEW_METHODS;
@@ -77,9 +80,20 @@ export const getVault = async (
     ];
 
     const results = await multicall.call(vaultCall);
+    const mappedResult = mapContractCalls(results.results[address]);
+
+    if (version === 'v1') {
+        const controller = new Contract(
+            mappedResult.controller,
+            ControllerABI.abi,
+            provider
+        );
+        const strategy = await controller.strategies(mappedResult.token);
+        strategies = [await getV1Strategy(strategy, provider)];
+    }
 
     return {
-        ...mapContractCalls(results.results[address]),
+        ...mappedResult,
         address,
         strategies,
         version,

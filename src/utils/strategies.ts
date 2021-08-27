@@ -18,6 +18,7 @@ import { mapStrategyParams } from './strategyParams';
 import { mapContractCalls } from './commonUtils';
 
 import StratABI from './ABI/Strategy.json';
+import V1StratABI from './ABI/V1Strategy.json';
 import TokenABI from './ABI/Token.json';
 
 interface VaultVersionInfo {
@@ -38,6 +39,8 @@ const STRAT_VIEW_METHODS = [
     'delegatedAssets',
     'want',
 ];
+
+const V1_STRAT_VIEW_METHODS = ['keeper', 'strategist', 'want', 'getName'];
 
 const STRAT_PARAM_METHODS: string[] = [
     'debtOutstanding',
@@ -183,7 +186,7 @@ export const mapStrategiesCalls = (
     });
 };
 
-const innerGetStrategies = async (
+export const getStrategies = async (
     addresses: string[],
     provider: Provider
 ): Promise<Strategy[]> => {
@@ -201,10 +204,10 @@ const innerGetStrategies = async (
 
     // do call to strategy apiVersion and vault
     const stratCalls: ContractCallContext[] = buildViewMethodsCall(addresses);
-
     const resultsViewMethods: ContractCallResults = await multicall.call(
         stratCalls
     );
+
     const vaultMap = new Map<string, VaultVersionInfo>();
     const strategyMap = new Map<string, string>();
 
@@ -248,9 +251,39 @@ const innerGetStrategies = async (
         strategyMap
     );
 
-    console.log(mappedStrategies);
-
     return mappedStrategies;
 };
 
-export const getStrategies = memoize(innerGetStrategies);
+export const getV1Strategy = async (
+    address: string,
+    provider: Provider
+): Promise<Strategy> => {
+    if (!address || !utils.isAddress(address)) {
+        throw new Error('Error: expect a valid strategy address');
+    }
+
+    const multicall = new Multicall({ ethersProvider: provider });
+    const strategyCall = [
+        {
+            reference: address,
+            contractAddress: address,
+            abi: V1StratABI.abi,
+            calls: V1_STRAT_VIEW_METHODS.map((method) => ({
+                reference: method,
+                methodName: method,
+                methodParameters: [],
+            })),
+        },
+    ];
+
+    const results = await multicall.call(strategyCall);
+
+    const strategy = {
+        ...mapContractCalls(results.results[address]),
+        address,
+    };
+
+    strategy.name = strategy.getName;
+
+    return strategy;
+};

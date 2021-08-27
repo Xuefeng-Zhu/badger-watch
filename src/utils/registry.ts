@@ -6,7 +6,7 @@ import { getVault } from './vaults';
 import BadgerRegistryABI from './ABI/BadgerRegistry.json';
 import { Vault } from '../types';
 
-const VAULT_VIEW_METHODS = ['symbol', 'name'];
+const VAULT_VIEW_METHODS = ['symbol', 'name', 'controller', 'token'];
 
 export const getRegistryGov = async (
     address: string,
