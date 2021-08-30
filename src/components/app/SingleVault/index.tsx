@@ -174,7 +174,7 @@ export const SingleVault = () => {
     return (
         <React.Fragment>
             <ReactHelmet title={vault?.name} />
-            <BreadCrumbs vaultId={vaultId} />
+            <BreadCrumbs vaultId={vaultId} version={version} />
             <Card className={classes.root}>
                 {loading ? (
                     <div

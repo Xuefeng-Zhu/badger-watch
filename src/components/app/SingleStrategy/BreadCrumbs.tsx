@@ -23,26 +23,25 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 type BreadCrumbsProps = {
+    version: string;
     vaultId: string;
     strategyId?: string;
 };
 const BreadCrumbs = (props: BreadCrumbsProps) => {
-    const { vaultId, strategyId } = props;
+    const { version, vaultId, strategyId } = props;
     const classes = useStyles();
 
     let strategyLevel;
-    if (strategyId !== undefined) {
+    if (strategyId) {
         strategyLevel = (
             <Link
                 component={RouterLink}
                 color="inherit"
-                to={`/vault/${vaultId.toLowerCase()}/strategy/${strategyId.toLowerCase()}`}
+                to={`/vault/${version}/${vaultId}/strategy/${strategyId}`}
             >
                 <Typography className={classes.text}>
-                    <Hidden smUp>{`${extractAddress(
-                        strategyId.toLowerCase()
-                    )}`}</Hidden>
-                    <Hidden xsDown>{strategyId.toLowerCase()}</Hidden>
+                    <Hidden smUp>{`${extractAddress(strategyId)}`}</Hidden>
+                    <Hidden xsDown>{strategyId}</Hidden>
                 </Typography>
             </Link>
         );
@@ -56,12 +55,10 @@ const BreadCrumbs = (props: BreadCrumbsProps) => {
             <Link
                 component={RouterLink}
                 color="inherit"
-                to={`/vault/${vaultId.toLowerCase()}/v2`}
+                to={`/vault/${version}/${vaultId}`}
             >
-                <Hidden smUp>{`${extractAddress(
-                    vaultId.toLowerCase()
-                )}`}</Hidden>
-                <Hidden xsDown>{vaultId.toLowerCase()}</Hidden>
+                <Hidden smUp>{`${extractAddress(vaultId)}`}</Hidden>
+                <Hidden xsDown>{vaultId}</Hidden>
             </Link>
             {strategyLevel}
         </MuiBreadcrumbs>

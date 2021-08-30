@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAsync } from 'react-use';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import MuiCard from '@material-ui/core/Card';
@@ -8,36 +9,30 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Typography } from '@material-ui/core';
 
 import BreadCrumbs from './BreadCrumbs';
-import StrategyDetail from './StrategyDetail';
+import V1StrategyDetail from './V1StrategyDetail';
 
 import { Strategy } from '../../../types';
 import EtherScanLink from '../../common/EtherScanLink';
 import ReactHelmet from '../../common/ReactHelmet';
-import { getStrategies } from '../../../utils/strategies';
+import { getV1Strategy } from '../../../utils/strategies';
 import { useWeb3Context } from '../../../providers/Web3ContextProvider';
 interface ParamTypes {
     strategyId: string;
     vaultId: string;
+    version: string;
 }
 
 export const SingleStrategy = () => {
     const { provider } = useWeb3Context();
-    const { strategyId, vaultId } = useParams<ParamTypes>();
+    const { version, strategyId, vaultId } = useParams<ParamTypes>();
 
-    const [strategyData, setStrategyData] = useState<Strategy[]>([]);
-    const [isLoaded, setIsLoaded] = useState(true);
-
-    useEffect(() => {
+    const { value: strategy, loading } = useAsync(async () => {
         if (!provider) {
             return;
         }
-        getStrategies([strategyId], provider).then((loadedStrategy) => {
-            setStrategyData(loadedStrategy);
-            setIsLoaded(false);
-        });
-    }, [strategyId]);
 
-    const strategy = strategyData && strategyData[0];
+        return await getV1Strategy(strategyId, provider);
+    }, [strategyId, version]);
 
     const useStyles = makeStyles((theme: Theme) =>
         createStyles({
@@ -54,10 +49,7 @@ export const SingleStrategy = () => {
 
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                border:
-                    strategy && strategy.emergencyExit
-                        ? '2px solid #ff6c6c'
-                        : '#fff',
+                border: strategy?.emergencyExit ? '2px solid #ff6c6c' : '#fff',
             },
             demo1: {
                 borderBottom: '1px solid #e8e8e8',
@@ -70,9 +62,13 @@ export const SingleStrategy = () => {
     return (
         <React.Fragment>
             <ReactHelmet title={strategy ? strategy.name : ''} />
-            <BreadCrumbs vaultId={vaultId} strategyId={strategyId} />
+            <BreadCrumbs
+                version={version}
+                vaultId={vaultId}
+                strategyId={strategyId}
+            />
 
-            {isLoaded ? (
+            {loading ? (
                 <div
                     style={{
                         textAlign: 'center',
@@ -87,16 +83,12 @@ export const SingleStrategy = () => {
             ) : (
                 <MuiCard className={classes.root}>
                     <CardHeader
-                        title={strategy ? strategy.name : ''}
+                        title={strategy?.name}
                         subheader={
-                            strategy ? (
-                                <EtherScanLink address={strategy.address} />
-                            ) : (
-                                ''
-                            )
+                            <EtherScanLink address={strategy?.address} />
                         }
                     />
-                    <StrategyDetail strategy={strategy} />
+                    {strategy && <V1StrategyDetail strategy={strategy} />}
                 </MuiCard>
             )}
         </React.Fragment>

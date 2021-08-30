@@ -40,7 +40,20 @@ const STRAT_VIEW_METHODS = [
     'want',
 ];
 
-const V1_STRAT_VIEW_METHODS = ['keeper', 'strategist', 'want', 'getName'];
+const V1_STRAT_VIEW_METHODS = [
+    'keeper',
+    'strategist',
+    'governance',
+    'controller',
+    'want',
+    'getName',
+    'performanceFeeGovernance',
+    'performanceFeeStrategist',
+    'withdrawalFee',
+    'withdrawalMaxDeviationThreshold',
+];
+
+const V1_STRAT_LIST_VIEW_METHODS = ['getName'];
 
 const STRAT_PARAM_METHODS: string[] = [
     'debtOutstanding',
@@ -252,6 +265,38 @@ export const getStrategies = async (
     );
 
     return mappedStrategies;
+};
+
+export const getV1Strategies = async (
+    addresses: string[],
+    provider: Provider
+): Promise<Strategy[]> => {
+    const multicall = new Multicall({ ethersProvider: provider });
+    const strategyCalls = addresses.map((address) => {
+        const calls = V1_STRAT_LIST_VIEW_METHODS.map((method) => ({
+            reference: method,
+            methodName: method,
+            methodParameters: [],
+        }));
+        return {
+            reference: address,
+            contractAddress: address,
+            abi: V1StratABI.abi,
+            calls,
+        };
+    });
+
+    const { results } = await multicall.call(strategyCalls);
+
+    return addresses.map((address) => {
+        const strategy = {
+            ...mapContractCalls(results[address]),
+            address,
+        };
+        strategy.name = strategy.getName;
+
+        return strategy;
+    });
 };
 
 export const getV1Strategy = async (

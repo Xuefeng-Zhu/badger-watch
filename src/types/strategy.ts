@@ -24,9 +24,12 @@ export type Strategy = {
     emergencyExit: boolean;
     isActive: boolean;
 
-    strategist: string;
+    controller: string;
+    governance: string;
     keeper: string;
+    strategist: string;
     rewards: string;
+    want: string;
 
     withdrawalQueueIndex: number;
     // params
@@ -41,4 +44,10 @@ export type Strategy = {
     lastReport: BigNumber;
 
     params: StrategyParams;
+
+    // V1
+    performanceFeeGovernance: BigNumber;
+    performanceFeeStrategist: BigNumber;
+    withdrawalFee: BigNumber;
+    withdrawalMaxDeviationThreshold: BigNumber;
 };

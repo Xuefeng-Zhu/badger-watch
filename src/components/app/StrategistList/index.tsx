@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Accordion from '@material-ui/core/Accordion';
@@ -23,7 +24,7 @@ type StrategistListProps = {
 };
 
 export const StrategistList = (props: StrategistListProps) => {
-    const { vault, expand = true } = props;
+    const { vault } = props;
     const config = vault.configOK;
     const useStyles = makeStyles((theme: Theme) =>
         createStyles({
@@ -100,9 +101,9 @@ export const StrategistList = (props: StrategistListProps) => {
                                         variant="subtitle1"
                                         gutterBottom
                                     >
-                                        <a
+                                        <Link
                                             className={classes.link}
-                                            href={`/vault/${vault.address}/strategy/${strategy.address}`}
+                                            to={`/vault/${vault.version}/${vault.address}/strategy/${strategy.address}`}
                                             rel="noreferrer"
                                         >
                                             <Hidden smUp>
@@ -114,7 +115,7 @@ export const StrategistList = (props: StrategistListProps) => {
                                             <Hidden xsDown>
                                                 {strategy.name}
                                             </Hidden>
-                                        </a>
+                                        </Link>
                                     </Typography>
                                 </Grid>
                                 <Hidden xsDown>

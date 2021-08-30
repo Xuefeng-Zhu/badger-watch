@@ -29,7 +29,7 @@ class App extends React.Component {
                     />
                     <Route
                         exact
-                        path="/vault/:vaultId/strategy/:strategyId"
+                        path="/vault/:version/:vaultId/strategy/:strategyId"
                         component={SingleStrategy}
                     />
 

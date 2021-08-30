@@ -141,7 +141,7 @@ export const VaultItemList = (props: VaultItemListProps) => {
                                                         {
                                                             vault.configErrors
                                                                 .length
-                                                        }{' '}
+                                                        }
                                                         warning(s) found
                                                     </Typography>
                                                     {vault.configErrors.map(
@@ -168,16 +168,13 @@ export const VaultItemList = (props: VaultItemListProps) => {
                                         rel="noreferrer"
                                     >
                                         <span className={classes.textVault}>
-                                            {' '}
-                                            {vault.name}{' '}
+                                            {vault.name}
                                             {` (${vault.strategies.length}  strats)`}
                                         </span>
                                     </Link>
                                 </Grid>
                                 <Hidden xsDown>
-                                    {' '}
                                     <Grid item md={6} xs={9}>
-                                        {' '}
                                         <EtherScanLink
                                             address={vault.address}
                                             dark={true}
@@ -191,7 +188,6 @@ export const VaultItemList = (props: VaultItemListProps) => {
                 <Hidden smUp>
                     <Grid container className={classes.root} spacing={2}>
                         <Grid item md={8} xs={12}>
-                            {' '}
                             <EtherScanLink
                                 address={vault.address}
                                 dark={true}

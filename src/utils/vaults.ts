@@ -1,10 +1,9 @@
 import { Multicall } from 'ethereum-multicall';
 import { utils, Contract } from 'ethers';
-import { get, memoize } from 'lodash';
 import { Provider } from '@ethersproject/abstract-provider';
 import { Vault, Strategy } from '../types';
 import { mapContractCalls } from './commonUtils';
-import { getStrategies, getV1Strategy } from './strategies';
+import { getStrategies, getV1Strategy, getV1Strategies } from './strategies';
 import VaultABI from './ABI/Vault.json';
 import ControllerABI from './ABI/Controller.json';
 import V1VaultABI from './ABI/V1Vault.json';
@@ -39,6 +38,10 @@ const V1_VAULT_VIEW_METHODS = [
     'totalSupply',
     'token',
 ];
+
+const VAULT_LIST_VIEW_METHODS = ['symbol', 'name', 'token', 'controller'];
+
+const FILTERED_VAULTS = new Set(['0x4b92d19c11435614CD49Af1b589001b7c08cD4D5']);
 
 export const getVault = async (
     address: string,
@@ -82,15 +85,15 @@ export const getVault = async (
     const results = await multicall.call(vaultCall);
     const mappedResult = mapContractCalls(results.results[address]);
 
-    if (version === 'v1') {
-        const controller = new Contract(
-            mappedResult.controller,
-            ControllerABI.abi,
-            provider
-        );
-        const strategy = await controller.strategies(mappedResult.token);
-        strategies = [await getV1Strategy(strategy, provider)];
-    }
+    // if (version === 'v1') {
+    //     const controller = new Contract(
+    //         mappedResult.controller,
+    //         ControllerABI.abi,
+    //         provider
+    //     );
+    //     const strategy = await controller.strategies(mappedResult.token);
+    //     strategies = [await getV1Strategy(strategy, provider)];
+    // }
 
     return {
         ...mappedResult,
@@ -99,6 +102,76 @@ export const getVault = async (
         version,
         status,
     };
+};
+
+export const getVaults = async (
+    addresses: string[],
+    version: string,
+    provider: Provider,
+    status = 0
+): Promise<Vault[]> => {
+    const vaultAbi = V1VaultABI.abi;
+    const viewMethods = VAULT_LIST_VIEW_METHODS;
+
+    const multicall = new Multicall({ ethersProvider: provider });
+
+    const vaultCalls = addresses
+        .filter((address) => !FILTERED_VAULTS.has(address))
+        .map((address) => {
+            const calls = viewMethods.map((method) => ({
+                reference: method,
+                methodName: method,
+                methodParameters: [],
+            }));
+            return {
+                reference: address,
+                contractAddress: address,
+                abi: vaultAbi,
+                calls,
+            };
+        });
+
+    const { results: vaultResults } = await multicall.call(vaultCalls);
+
+    const vaults = Object.keys(vaultResults).map((address) => {
+        return {
+            ...mapContractCalls(vaultResults[address]),
+            address,
+            version,
+            status,
+        };
+    });
+
+    const controllerCalls = vaults.map((vault) => {
+        return {
+            reference: vault.token,
+            contractAddress: vault.controller,
+            abi: ControllerABI.abi,
+            calls: [
+                {
+                    reference: 'strategies',
+                    methodName: 'strategies',
+                    methodParameters: [vault.token],
+                },
+            ],
+        };
+    });
+    const { results: controllerResults } = await multicall.call(
+        controllerCalls
+    );
+
+    const strategies = await getV1Strategies(
+        vaults.map((vault) => {
+            return mapContractCalls(controllerResults[vault.token]).strategies;
+        }),
+        provider
+    );
+
+    vaults.forEach((vault, index) => {
+        vault.strategies = [strategies[index]];
+    });
+
+    return vaults;
 };
 
 const getVaultStrategies = async (

@@ -34,7 +34,6 @@ export const V1VaultDescription = (props: VaultDescriptionProps) => {
         ]);
     }, [provider]);
 
-    console.log(keyValues);
     const renderErrors = () =>
         vault.configErrors &&
         vault.configErrors.map((message: string) => {

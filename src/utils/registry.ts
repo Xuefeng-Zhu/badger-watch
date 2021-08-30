@@ -2,7 +2,7 @@ import { Multicall } from 'ethereum-multicall';
 import { utils, Contract } from 'ethers';
 import { memoize } from 'lodash';
 import { Provider } from '@ethersproject/abstract-provider';
-import { getVault } from './vaults';
+import { getVault, getVaults } from './vaults';
 import BadgerRegistryABI from './ABI/BadgerRegistry.json';
 import { Vault } from '../types';
 
@@ -28,23 +28,20 @@ export const getProductionVaults = async (
         throw new Error('Error: expect a valid registry address');
     }
 
-    const vaults: Promise<Vault>[] = [];
+    let vaults: Vault[] = [];
     const contract = new Contract(address, BadgerRegistryABI.abi, provider);
     const res = await contract.getProductionVaults();
 
-    console.log(res);
     for (const { version, status, list } of res) {
-        for (const vault of list) {
-            vaults.push(
-                getVault(vault, version, provider, VAULT_VIEW_METHODS, status)
-            );
-        }
+        vaults = vaults.concat(
+            await getVaults(list, version, provider, status)
+        );
     }
 
-    return await Promise.all(vaults);
+    return vaults;
 };
 
-export const getVaults = async (
+export const getVaultsByAuthor = async (
     address: string,
     author: string,
     provider: Provider
@@ -68,11 +65,7 @@ const getVaultsByVersion = async (
     const contract = new Contract(address, BadgerRegistryABI.abi, provider);
     const vaults = await contract.getVaults(version, author);
 
-    return await Promise.all(
-        vaults.map((vault: string) =>
-            getVault(vault, version, provider, VAULT_VIEW_METHODS)
-        )
-    );
+    return getVaults(vaults, version, provider);
 };
 
 export const getKeyValues = async (
