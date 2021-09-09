@@ -4823,10 +4823,10 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
 
-ethereum-multicall@^2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/ethereum-multicall/-/ethereum-multicall-2.7.0.tgz#e69aaa2b68df8bce479bef03e8fd81e51ae558ad"
-  integrity sha512-fnbyk0naGwupnnirI7KIzSlx2P6ZV1piS2dJ4W7dJbBgAfr1OKcbcqeNq+ADi/cIzSV6shcjynLYQQs5UOPqUw==
+ethereum-multicall@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/ethereum-multicall/-/ethereum-multicall-2.8.0.tgz#765dd0d307b2d00fa4c02578af805f86987e490a"
+  integrity sha512-0SKp3yLJ/M7zXNPbcQxQWmsH9PLjaONe621FjZBZeYEvX7ft4/M2eihKyDDtPtsUI254h7VsZzl8t93cRFcTOg==
   dependencies:
     "@ethersproject/providers" "^5.0.10"
     ethers "^5.0.15"
